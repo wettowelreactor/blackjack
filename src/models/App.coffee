@@ -11,10 +11,12 @@ class window.App extends Backbone.Model
     @set 'dealerHand', deck.dealDealer()
     @set 'splitHand', null
     @set 'activeHand', 'playerHand'
+    @set 'bets', new Bets()
     @listenTo @get('playerHand'), 'splitPossible', -> @trigger('splitPossible')
     @listenTo @get('playerHand'), 'bust', -> @trigger('bust')
     @listenTo @get('playerHand'), 'stand', -> @trigger('stand')
     @listenTo @get('playerHand'), 'scoreGame', (params) -> @trigger('scoreGame', params)
     @listenTo @get('dealerHand'), 'scoreGame', -> @trigger('scoreGame')
+    @listenTo @get('bets'), 'finishBet', -> @trigger('finishBet')
 
 

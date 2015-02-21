@@ -1,6 +1,6 @@
 class window.WalletView extends Backbone.View
-  className: 'wallet'
-  template: _.template '<h1><%= funds %></h1>'
+  el: '<h1>'
+  template: _.template '<%= funds %>'
 
   initialize: ->
     @listenTo(@model, 'add remove change', => @render())

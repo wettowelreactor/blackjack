@@ -1,6 +1,7 @@
 class window.AppView extends Backbone.View
   template: _.template '
     <div class="wallet"></div>
+    <div class="bets"></div>
     <button class="hit-button">Hit</button> <button class="stand-button">Stand</button>
     <button class="split-button">Split</button>
     <button class="restart-button">Start a New Game</button>
@@ -30,6 +31,11 @@ class window.AppView extends Backbone.View
     @listenTo @model, 'splitPossible', @showSplit
     @listenTo @model, 'bust', @bust
     @listenTo @model, 'stand', @stand
+    @listenTo @model, 'finishBet', @finalizeBet
+
+
+  finalizeBet: ->
+    @model.get('playerHand').each((card)->card.flip())
     @model.get('playerHand').checkForBlackjack()
     @model.get('playerHand').checkForSplit()
 
@@ -56,6 +62,8 @@ class window.AppView extends Backbone.View
     @$el.children().detach()
     @$el.html @template()
     @$('.wallet').html new WalletView(model: @model.get 'wallet').el
+    @$('.bets').html new BetsView(model: @model.get 'bets').el
+    @model.get('playerHand').each((card)->card.flip())
     @$('.player-hand-container').html new HandView(collection: @model.get 'playerHand').el
     @$('.dealer-hand-container').html new HandView(collection: @model.get 'dealerHand').el
     @$el.find('.restart-button').hide()
@@ -100,6 +108,7 @@ class window.AppView extends Backbone.View
     @$el.find('.split-button').show()
 
   splitHand: ->
+    @model.get('bets').set('splitHand', true)
     @$el.find('.split-button').hide()
     card = @model.get('playerHand').pop();
     @model.get('playerHand').hit()
