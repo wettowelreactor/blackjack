@@ -14,3 +14,7 @@
 .hand {
   overflow: auto;
 }
+
+.activeHand {
+  background-color: green;
+}

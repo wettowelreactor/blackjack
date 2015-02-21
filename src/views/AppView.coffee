@@ -35,7 +35,9 @@ class window.AppView extends Backbone.View
   transferHand: ->
     if @model.get('splitHand') != null && !@model.get('splitHand').active
       @model.get('playerHand').active = false
+      @model.get('playerHand').trigger('change')
       @model.get('splitHand').active = true
+      @model.get('splitHand').trigger('change')
       @model.set('activeHand', 'splitHand')
       true
     else
