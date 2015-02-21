@@ -3,7 +3,7 @@ class window.Hand extends Backbone.Collection
 
   initialize: (array, @deck, @isDealer, @active) ->
 
-  hit: ->
+  hit: (splitAces) ->
     # split aces set
     # length of collection 3
       # stand (add function for stand())
@@ -11,6 +11,8 @@ class window.Hand extends Backbone.Collection
     @add(@deck.pop())
     if @scores()[0] > 21
       @trigger('bust')
+    if (splitAces)
+      @trigger('stand')
 
   play: ->
     hiddenCards = @filter((card) -> !card.get('revealed'))

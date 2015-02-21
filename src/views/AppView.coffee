@@ -9,16 +9,26 @@ class window.AppView extends Backbone.View
   '
 
   events:
-    'click .hit-button': -> @model.get(@model.get('activeHand')).hit()
+    'click .hit-button': -> @hit()
     'click .stand-button': -> @stand()
     'click .restart-button': -> @restartGame()
     'click .split-button': -> @splitHand()
+
+  hit: ->
+    splitAces = false
+    # is a second hand and first card is ace
+    splitHand = @model.get('splitHand')
+    if splitHand and splitHand.first().get('rankName') == 'Ace'
+      splitAces = true
+
+    @model.get(@model.get('activeHand')).hit(splitAces)
 
   initialize: ->
     @render()
     @listenTo @model, 'scoreGame', (params) -> @scoreGame(params)
     @listenTo @model, 'splitPossible', @showSplit
     @listenTo @model, 'bust', @bust
+    @listenTo @model, 'stand', @stand
     @model.get('playerHand').checkForBlackjack()
     @model.get('playerHand').checkForSplit()
 
@@ -84,3 +94,4 @@ class window.AppView extends Backbone.View
     @$('.player-hand-container').append(new HandView(collection: newHand).el)
     @model.set('splitHand', newHand)
     @model.listenTo(@model.get('splitHand'), 'bust', => @model.trigger('bust'))
+    @model.listenTo(@model.get('splitHand'), 'stand', => @model.trigger('stand'))
