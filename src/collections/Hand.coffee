@@ -6,7 +6,20 @@ class window.Hand extends Backbone.Collection
   hit: ->
     @add(@deck.pop())
     if @scores()[0] > 21
-      @trigger('bust')
+      @trigger('scoreGame')
+
+  stand: ->
+    @trigger('stand')
+
+  play: ->
+    hiddenCards = @filter((card) -> !card.get('revealed'))
+    hiddenCards.forEach((card) -> card.flip())
+
+    while @scores()[0] < 17
+      @hit()
+
+    @trigger('scoreGame')
+
 
 
   hasAce: -> @reduce (memo, card) ->
@@ -23,4 +36,6 @@ class window.Hand extends Backbone.Collection
     # when there is an ace, it offers you two scores - the original score, and score + 10.
     [@minScore(), @minScore() + 10 * @hasAce()]
 
-
+  checkForBlackjack: ->
+    if not @isDealer and @scores()[1] == 21
+      @trigger('scoreGame', true)

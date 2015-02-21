@@ -14,7 +14,8 @@ class window.AppView extends Backbone.View
 
   initialize: ->
     @render()
-    @listenTo @model, 'bust', @playerBust
+    @listenTo @model, 'scoreGame', (params) -> @scoreGame(params)
+    @model.get('playerHand').checkForBlackjack()
 
   render: ->
     @$el.children().detach()
@@ -23,10 +24,26 @@ class window.AppView extends Backbone.View
     @$('.dealer-hand-container').html new HandView(collection: @model.get 'dealerHand').el
     @$el.find('.restart-button').hide()
 
-  playerBust: ->
-    @$el.find('.status').html('<h1>Bust</h1>')
+  scoreGame: (params) ->
     @$el.find('button').hide()
     @$el.find('.restart-button').show()
+
+    playerScore = @model.get('playerHand').scores()[1]
+    playerScore = @model.get('playerHand').scores()[0] if playerScore > 21
+    dealerScore = @model.get('dealerHand').scores()[0];
+
+    if params
+      @$el.find('.status').html('<h1>BlackJack!</h1>')
+    else if playerScore > 21
+      @$el.find('.status').html('<h1>Bust</h1>')
+    else if dealerScore > 21
+      @$el.find('.status').html('<h1>Dealer Bust</h1>')
+    else if playerScore > dealerScore
+      @$el.find('.status').html('<h1>Player Win</h1>')
+    else if playerScore == dealerScore
+      @$el.find('.status').html('<h1>Push!</h1>')
+    else
+      @$el.find('.status').html('<h1>Dealer Win</h1>')
 
   restartGame: ->
     @model.initGame()

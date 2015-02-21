@@ -8,6 +8,8 @@ class window.App extends Backbone.Model
     @set 'deck', deck = new Deck()
     @set 'playerHand', deck.dealPlayer()
     @set 'dealerHand', deck.dealDealer()
-    @listenTo @get('playerHand'), 'bust', -> @trigger('bust')
+    @listenTo @get('playerHand'), 'scoreGame', (params) -> @trigger('scoreGame', params)
+    @listenTo @get('playerHand'), 'stand', -> @get('dealerHand').play()
+    @listenTo @get('dealerHand'), 'scoreGame', -> @trigger('scoreGame')
 
 
