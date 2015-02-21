@@ -43,7 +43,7 @@ class window.AppView extends Backbone.View
 
   bust: ->
     if @transferHand() is false
-      @scoreGame()
+      @model.get('dealerHand').play()
 
   stand: ->
     if @transferHand() is false
@@ -61,22 +61,32 @@ class window.AppView extends Backbone.View
     @$el.find('button').hide()
     @$el.find('.restart-button').show()
 
-    playerScore = @model.get('playerHand').scores()[1]
-    playerScore = @model.get('playerHand').scores()[0] if playerScore > 21
     dealerScore = @model.get('dealerHand').scores()[0];
 
-    if params
-      @$el.find('.status').html('<h1>BlackJack!</h1>')
-    else if playerScore > 21
-      @$el.find('.status').html('<h1>Bust</h1>')
-    else if dealerScore > 21
-      @$el.find('.status').html('<h1>Dealer Bust</h1>')
-    else if playerScore > dealerScore
-      @$el.find('.status').html('<h1>Player Win</h1>')
-    else if playerScore == dealerScore
-      @$el.find('.status').html('<h1>Push!</h1>')
+    playerHandResult = @scoreHand('playerHand', dealerScore, params)
+    if (@model.get('splitHand'))
+      splitHandResult = @scoreHand('splitHand', dealerScore, params)
+
+    if (!splitHandResult)
+      @$el.find('.status').html('<h1>' + playerHandResult + '</h1>')
     else
-      @$el.find('.status').html('<h1>Dealer Win</h1>')
+      @$el.find('.status').html('<h1> Hand 1: ' + playerHandResult + ' | Hand 2:' + splitHandResult + '</h1>')
+
+  scoreHand: (hand, dealerScore, params) ->
+    playerScore = @model.get(hand).scores()[1]
+    playerScore = @model.get(hand).scores()[0] if playerScore > 21
+    if params
+      return 'BlackJack!'
+    else if playerScore > 21
+      return 'Bust'
+    else if dealerScore > 21
+      return 'Dealer Bust'
+    else if playerScore > dealerScore
+      return 'Player Win'
+    else if playerScore == dealerScore
+      return 'Push!'
+    else
+      return 'Dealer Win'
 
   restartGame: ->
     @model.initGame()
