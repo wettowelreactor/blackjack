@@ -2,6 +2,7 @@
 # of containing the game logic directly.
 class window.App extends Backbone.Model
   initialize: ->
+    @set 'wallet', new Wallet()
     @initGame()
 
   initGame: ->
