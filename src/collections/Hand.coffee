@@ -4,6 +4,10 @@ class window.Hand extends Backbone.Collection
   initialize: (array, @deck, @isDealer, @active) ->
 
   hit: ->
+    # split aces set
+    # length of collection 3
+      # stand (add function for stand())
+    # Add event listener (for stand()) to splithand when it's created
     @add(@deck.pop())
     if @scores()[0] > 21
       @trigger('bust')
