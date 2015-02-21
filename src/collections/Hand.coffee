@@ -1,15 +1,12 @@
 class window.Hand extends Backbone.Collection
   model: Card
 
-  initialize: (array, @deck, @isDealer) ->
+  initialize: (array, @deck, @isDealer, @active) ->
 
   hit: ->
     @add(@deck.pop())
     if @scores()[0] > 21
-      @trigger('scoreGame')
-
-  stand: ->
-    @trigger('stand')
+      @trigger('bust')
 
   play: ->
     hiddenCards = @filter((card) -> !card.get('revealed'))

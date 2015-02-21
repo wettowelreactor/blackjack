@@ -9,8 +9,8 @@ class window.AppView extends Backbone.View
   '
 
   events:
-    'click .hit-button': -> @model.get('playerHand').hit()
-    'click .stand-button': -> @model.get('playerHand').stand()
+    'click .hit-button': -> @model.get(@model.get('activeHand')).hit()
+    'click .stand-button': -> @stand()
     'click .restart-button': -> @restartGame()
     'click .split-button': -> @splitHand()
 
@@ -18,8 +18,26 @@ class window.AppView extends Backbone.View
     @render()
     @listenTo @model, 'scoreGame', (params) -> @scoreGame(params)
     @listenTo @model, 'splitPossible', @showSplit
+    @listenTo @model, 'bust', @bust
     @model.get('playerHand').checkForBlackjack()
     @model.get('playerHand').checkForSplit()
+
+  transferHand: ->
+    if @model.get('splitHand') != null && !@model.get('splitHand').active
+      @model.get('playerHand').active = false
+      @model.get('splitHand').active = true
+      @model.set('activeHand', 'splitHand')
+      true
+    else
+      false
+
+  bust: ->
+    if @transferHand() is false
+      @scoreGame()
+
+  stand: ->
+    if @transferHand() is false
+      @model.get('dealerHand').play()
 
   render: ->
     @$el.children().detach()
@@ -64,3 +82,5 @@ class window.AppView extends Backbone.View
     newHand = new Hand([card], @model.get('deck'))
     newHand.hit();
     @$('.player-hand-container').append(new HandView(collection: newHand).el)
+    @model.set('splitHand', newHand)
+    @model.listenTo(@model.get('splitHand'), 'bust', => @model.trigger('bust'))
