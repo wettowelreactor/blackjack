@@ -20,8 +20,6 @@ class window.Hand extends Backbone.Collection
 
     @trigger('scoreGame')
 
-
-
   hasAce: -> @reduce (memo, card) ->
     memo or card.get('value') is 1
   , 0
@@ -39,3 +37,7 @@ class window.Hand extends Backbone.Collection
   checkForBlackjack: ->
     if not @isDealer and @scores()[1] == 21
       @trigger('scoreGame', true)
+
+  checkForSplit: ->
+    if @models[0].attributes.value == @models[1].attributes.value
+      @trigger('splitPossible')
